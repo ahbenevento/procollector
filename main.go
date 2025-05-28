@@ -49,26 +49,12 @@ func printResume(params cmdParams) {
 }
 
 func findProjects(params cmdParams) {
-	printError := func(path string, err error) {
-		fmt.Fprintf(os.Stderr, "* Ignorando \"%s\" por error:\n\t%s\n", path, err)
-	}
-	checkProjectFile := func(filename string) bool {
-		fmt.Println(filename)
-		return true
-	}
+	pf := newProjectFinder(params.workingDirectories, params.tags, params.patterns)
 
-	fmt.Println(getSanitizedPathList(params.workingDirectories))
+	pf.run()
 
-	for _, repo := range params.workingDirectories {
-		ffinder := newFilesFinder(repo, params.patterns, checkProjectFile)
-
-		ffinder.setErrorCallback(printError)
-
-		err := ffinder.find()
-
-		if err != nil {
-			fmt.Printf("Error al buscar proyectos: %s\n", err)
-			os.Exit(1)
-		}
+	if err := pf.Error(); err != nil {
+		fmt.Printf("Error al buscar proyectos: %s\n", err)
+		os.Exit(1)
 	}
 }

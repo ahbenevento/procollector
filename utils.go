@@ -7,18 +7,20 @@ import (
 
 //  //  //
 
-func addUniqueString(list *[]string, filenames ...string) {
-	for _, filename := range filenames {
-		if !slices.Contains(*list, filename) {
-			*list = append(*list, filename)
-		}
-	}
-}
-
+// Retorna una lista ordenada, sin duplicados de las carpetas padres de otras
+// indicadas desde la línea de comando.
 func getSanitizedPathList(paths []string) []string {
 	if len(paths) == 1 {
 		return paths
 	}
+
+	slices.SortFunc(paths, func(path1, path2 string) int {
+		if len(path1) < len(path2) {
+			return -1
+		}
+
+		return 1
+	})
 
 	result := []string{}
 
@@ -27,27 +29,19 @@ func getSanitizedPathList(paths []string) []string {
 			continue
 		}
 
-		add := true
-
-		for k, parent := range result {
+		for _, parent := range result {
 			if parent == path {
-				continue
+				goto skip
 			}
 
 			if strings.HasPrefix(path, parent) {
-				add = false
-
-				break
-			} else if strings.HasPrefix(parent, path) {
-				result = slices.Delete(result, k, k+1)
-
-				break
+				goto skip
 			}
 		}
 
-		if add {
-			addUniqueString(&result, path)
-		}
+		result = append(result, path)
+
+	skip:
 	}
 
 	return result
