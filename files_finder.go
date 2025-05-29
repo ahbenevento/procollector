@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 )
 
 //  //  //
@@ -27,10 +28,8 @@ func (ff filesFinder) find() error {
 			return err
 		}
 
-		for _, filename := range files {
-			if ff.onFound(filename) {
-				return nil
-			}
+		if slices.ContainsFunc(files, ff.onFound) {
+			return nil
 		}
 	}
 

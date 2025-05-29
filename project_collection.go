@@ -1,6 +1,9 @@
 package main
 
-import "slices"
+import (
+	"maps"
+	"slices"
+)
 
 //  //  //
 
@@ -9,7 +12,7 @@ type projectCollection struct {
 	tags     map[string][]int
 }
 
-func (pc *projectCollection) setProjects(projects []project) {
+func (pc *projectCollection) setProjects(projects []project) *projectCollection {
 	pc.projects = projects
 
 	for ip, project := range pc.projects {
@@ -23,6 +26,12 @@ func (pc *projectCollection) setProjects(projects []project) {
 			}
 		}
 	}
+
+	return pc
+}
+
+func (pc projectCollection) getAllTags() []string {
+	return slices.Collect(maps.Keys(pc.tags))
 }
 
 func (pc projectCollection) findTagByProjectItem(tag string, projectItem int) bool {

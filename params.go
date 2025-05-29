@@ -82,6 +82,7 @@ type cmdParams struct {
 	tags               directoryTagsCmdParam
 	patterns           filePatternsCmdParam
 	printResume        bool
+	outputCSVFilename  string
 }
 
 func (p *cmdParams) parse() error {
@@ -91,6 +92,7 @@ func (p *cmdParams) parse() error {
 	flag.Var(&p.tags, "t", `Define una etiqueta de directorio con el formato: "etiqueta=dir/subdir"`)
 	flag.Var(&p.patterns, "f", `Define uno o más nombres de archivos a buscar (separados por ":"`)
 	flag.BoolVar(&p.printResume, "r", false, "Solo muestra un resumen de los parámetros recibidos.")
+	flag.StringVar(&p.outputCSVFilename, "csv", "", "Guardar los resultados en archivo CSV.")
 
 	if err := flag.Parse(os.Args[1:]); err != nil {
 		return err

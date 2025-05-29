@@ -22,7 +22,7 @@ func (pf *projectFinder) printError(path string, err error) {
 	pf.mu.Lock()
 	defer pf.mu.Unlock()
 
-	fmt.Fprintf(os.Stderr, "* Ignorando \"%s\" por error:\n\t%s\n", path, err)
+	fmt.Fprintf(os.Stderr, "* Error al intentar acceder a \"%s\" (ignorando):\n\t%s\n", path, err)
 }
 
 func (pf *projectFinder) checkProjectFile(path string) bool {
@@ -31,13 +31,17 @@ func (pf *projectFinder) checkProjectFile(path string) bool {
 
 	project, err := loadProjectFromIniFile(path)
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "* Fallo al leer archivo INI \"%s\":\n\t%s\n", path, err)
-	} else if project != nil {
+	if project != nil {
 		pf.projects = append(pf.projects, *project)
+
+		return true
 	}
 
-	return true
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "* Fallo al leer el archivo INI \"%s\":\n\t%s\n", path, err)
+	}
+
+	return false
 }
 
 func (pf *projectFinder) Error() error {

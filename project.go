@@ -1,5 +1,7 @@
 package main
 
+import "slices"
+
 //  //  //
 
 type project struct {
@@ -10,6 +12,10 @@ type project struct {
 
 func (p *project) addTag(name string) {
 	p.tags = append(p.tags, name)
+}
+
+func (p project) hasTag(name string) bool {
+	return slices.Contains(p.tags, name)
 }
 
 //  //  //
