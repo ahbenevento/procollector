@@ -15,7 +15,7 @@ type projectFinder struct {
 	tags           directoryTagsCmdParam
 	patterns       filePatternsCmdParam
 	err            error
-	foundFiles     int
+	projects       []project
 }
 
 func (pf *projectFinder) printError(path string, err error) {
@@ -29,10 +29,13 @@ func (pf *projectFinder) checkProjectFile(path string) bool {
 	pf.mu.Lock()
 	defer pf.mu.Unlock()
 
-	// TODO: revisar archivo de proyecto
-	fmt.Println(path)
+	project, err := loadProjectFromIniFile(path)
 
-	pf.foundFiles++
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "* Fallo al leer archivo INI \"%s\":\n\t%s\n", path, err)
+	} else if project != nil {
+		pf.projects = append(pf.projects, *project)
+	}
 
 	return true
 }
@@ -64,7 +67,7 @@ func (pf *projectFinder) run() int {
 	}
 
 	wg.Wait()
-	return pf.foundFiles
+	return len(pf.projects)
 }
 
 //  //  //

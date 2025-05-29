@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"os"
 )
@@ -48,13 +49,33 @@ func printResume(params cmdParams) {
 	}
 }
 
-func findProjects(params cmdParams) {
+func findProjects(params cmdParams) projectCollection {
 	pf := newProjectFinder(params.workingDirectories, params.tags, params.patterns)
-
-	pf.run()
+	count := pf.run()
 
 	if err := pf.Error(); err != nil {
 		fmt.Printf("Error al buscar proyectos: %s\n", err)
 		os.Exit(1)
+	} else if count == 0 {
+		return
 	}
+
+	collection := newProjectCollection()
+
+	collection.setProjects(pf.projects)
+
+	csvWriter := csv.NewWriter(os.Stdout)
+
+	defer csvWriter.Flush()
+
+	for _, project := range collection.projects {
+		record := []string{
+			project.name,
+			project.path,
+		}
+
+		csvWriter.Write(record)
+	}
+
+	return *collection
 }
