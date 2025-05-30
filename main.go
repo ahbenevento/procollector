@@ -30,12 +30,15 @@ func main() {
 
 	if params.outputCSVFilename != "" {
 		writeCSVFile(*projectCollection, params.outputCSVFilename)
-	} else if params.outputJSONFilename != "" {
-		writeJSONFile(*projectCollection, params.outputJSONFilename)
-	} else {
-		printProjects(*projectCollection)
 	}
 
+	if params.outputJSONFilename != "" {
+		writeJSONFile(*projectCollection, params.outputJSONFilename)
+	}
+
+	if params.outputCSVFilename == "" && params.outputJSONFilename == "" {
+		printProjects(*projectCollection)
+	}
 }
 
 func printResume(params cmdParams) {
