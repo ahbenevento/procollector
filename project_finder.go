@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -16,6 +17,11 @@ type projectFinder struct {
 	patterns       filePatternsCmdParam
 	err            error
 	projects       []project
+	all            bool
+}
+
+func (pf *projectFinder) includeDisabledProjects(include bool) {
+	pf.all = include
 }
 
 func (pf *projectFinder) printError(path string, err error) {
@@ -29,9 +35,17 @@ func (pf *projectFinder) checkProjectFile(path string) bool {
 	pf.mu.Lock()
 	defer pf.mu.Unlock()
 
-	project, err := loadProjectFromIniFile(path)
+	project, err := loadProjectFromIniFile(path, pf.all)
 
 	if project != nil {
+		if len(pf.tags) > 0 {
+			for tag, subdir := range pf.tags {
+				if strings.Contains(path, subdir) && !project.hasTag(tag) {
+					project.Tags = append(project.Tags, tag)
+				}
+			}
+		}
+
 		pf.projects = append(pf.projects, *project)
 
 		return true

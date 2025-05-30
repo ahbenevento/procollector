@@ -13,6 +13,8 @@ func main() {
 	if err := params.parse(); err != nil {
 		fmt.Printf("Error en los parámetros utilizados: %s\n", err)
 		os.Exit(1)
+	} else if len(params.workingDirectories) == 0 {
+		return
 	}
 
 	if params.printResume {
@@ -28,6 +30,8 @@ func main() {
 
 	if params.outputCSVFilename != "" {
 		writeCSVFile(*projectCollection, params.outputCSVFilename)
+	} else if params.outputJSONFilename != "" {
+		writeJSONFile(*projectCollection, params.outputJSONFilename)
 	} else {
 		printProjects(*projectCollection)
 	}
@@ -57,10 +61,33 @@ func printResume(params cmdParams) {
 			fmt.Printf("    %s\n", pattern)
 		}
 	}
+
+	fmt.Println("\n  + Salida:")
+
+	if params.outputCSVFilename != "" {
+		if params.outputCSVFilename == "-" {
+			fmt.Println("    Pantalla (formato CSV)")
+		} else {
+			fmt.Printf("    Archivo CSV: %s\n", params.outputCSVFilename)
+		}
+	} else if params.outputJSONFilename != "" {
+		if params.outputJSONFilename == "-" {
+			fmt.Println("    Pantalla (formato JSON)")
+		} else {
+			fmt.Printf("    Archivo JSON: %s\n", params.outputJSONFilename)
+		}
+	} else {
+		fmt.Println("    Pantalla")
+	}
 }
 
 func findProjects(params cmdParams) *projectCollection {
 	pf := newProjectFinder(params.workingDirectories, params.tags, params.patterns)
+
+	if params.outputJSONFilename != "" {
+		pf.includeDisabledProjects(true)
+	}
+
 	count := pf.run()
 
 	if err := pf.Error(); err != nil {
@@ -77,6 +104,6 @@ func printProjects(collection projectCollection) {
 	fmt.Printf("PROYECTOS ENCONTRADOS: %d\n", len(collection.projects))
 
 	for _, project := range collection.projects {
-		fmt.Printf("\n  - %-40s  %s\n", project.name, project.path)
+		fmt.Printf("\n  - %-40s  %s\n", project.Name, project.Path)
 	}
 }

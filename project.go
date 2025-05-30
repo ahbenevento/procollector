@@ -1,28 +1,28 @@
 package main
 
-import "slices"
+import (
+	"slices"
+)
 
 //  //  //
 
 type project struct {
-	name string
-	path string
-	tags []string
-}
-
-func (p *project) addTag(name string) {
-	p.tags = append(p.tags, name)
+	Name    string   `json:"name"`
+	Path    string   `json:"rootPath"`
+	Enabled bool     `json:"enabled"`
+	Tags    []string `json:"tags,omitempty"`
 }
 
 func (p project) hasTag(name string) bool {
-	return slices.Contains(p.tags, name)
+	return slices.Contains(p.Tags, name)
 }
 
 //  //  //
 
 func newProject(name, path string) *project {
 	return &project{
-		name: name,
-		path: path,
+		Name:    name,
+		Path:    path,
+		Enabled: true,
 	}
 }

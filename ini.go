@@ -8,7 +8,7 @@ import (
 
 //  //  //
 
-func loadProjectFromIniFile(filename string) (*project, error) {
+func loadProjectFromIniFile(filename string, includeDisabledProject bool) (*project, error) {
 	iniFile, err := ini.Load(filename)
 
 	if err != nil {
@@ -17,17 +17,19 @@ func loadProjectFromIniFile(filename string) (*project, error) {
 
 	section := iniFile.Section("")
 	name := section.Key("name").String()
+	disabled, _ := section.Key("disabled").Bool()
 
-	if name == "" {
+	if (disabled && !includeDisabledProject) || name == "" {
 		// No es un archivo de configuración de proyectos
 		return nil, nil
 	}
 
-	result := project{
-		name: name,
-		path: path.Dir(filename),
-		tags: section.Key("tag").Strings(","),
+	result := newProject(name, path.Dir(filename))
+	result.Tags = section.Key("tag").Strings(",")
+
+	if disabled {
+		result.Enabled = false
 	}
 
-	return &result, nil
+	return result, nil
 }

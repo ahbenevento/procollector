@@ -16,13 +16,15 @@ func (pc *projectCollection) setProjects(projects []project) *projectCollection 
 	pc.projects = projects
 
 	for ip, project := range pc.projects {
-		if len(project.tags) > 0 {
-			for _, tag := range project.tags {
-				if collectionTag, ok := pc.tags[tag]; ok {
-					collectionTag = append(collectionTag, ip)
-				} else {
-					pc.tags[tag] = []int{ip}
-				}
+		if len(project.Tags) == 0 {
+			continue
+		}
+
+		for _, tag := range project.Tags {
+			if collectionTag, ok := pc.tags[tag]; ok {
+				collectionTag = append(collectionTag, ip)
+			} else {
+				pc.tags[tag] = []int{ip}
 			}
 		}
 	}

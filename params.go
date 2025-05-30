@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -83,6 +82,7 @@ type cmdParams struct {
 	patterns           filePatternsCmdParam
 	printResume        bool
 	outputCSVFilename  string
+	outputJSONFilename string
 }
 
 func (p *cmdParams) parse() error {
@@ -90,12 +90,15 @@ func (p *cmdParams) parse() error {
 
 	flag.SetOutput(io.Discard)
 	flag.Var(&p.tags, "t", `Define una etiqueta de directorio con el formato: "etiqueta=dir/subdir"`)
-	flag.Var(&p.patterns, "f", `Define uno o más nombres de archivos a buscar (separados por ":"`)
+	flag.Var(&p.patterns, "f", `Define uno o más nombres de archivos a buscar (separados por ":").`)
 	flag.BoolVar(&p.printResume, "r", false, "Solo muestra un resumen de los parámetros recibidos.")
-	flag.StringVar(&p.outputCSVFilename, "csv", "", "Guardar los resultados en archivo CSV.")
+	flag.StringVar(&p.outputCSVFilename, "csv", "", "Guarda los proyectos encontrados en un archivo CSV.")
+	flag.StringVar(&p.outputJSONFilename, "json", "", "Guarda los proyectos en un archivo JSON.")
 
-	if err := flag.Parse(os.Args[1:]); err != nil {
-		return err
+	errorInParams := flag.Parse(os.Args[1:])
+
+	if errorInParams != nil {
+		return errorInParams
 	}
 
 	for _, dir := range flag.Args() {
@@ -112,8 +115,9 @@ func (p *cmdParams) parse() error {
 		p.workingDirectories = getSanitizedPathList(p.workingDirectories)
 	}
 
-	if len(p.workingDirectories) == 0 {
-		return errors.New("por favor ingrese una carpeta donde localizar sus proyectos")
+	if len(p.workingDirectories) == 0 && errorInParams == nil {
+		flag.SetOutput(os.Stdout)
+		flag.PrintDefaults()
 	}
 
 	if len(p.patterns) == 0 {
