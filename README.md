@@ -1,6 +1,6 @@
 # Busca y recopila proyectos
 
-Proyecto desarrollado en **Go** para buscar y recopilar proyectos en distintas carpetas repositorios de código.
+Desarrollado en **Go** para buscar y recopilar proyectos en distintas carpetas repositorios de código.
 
 No solo imprime en pantalla los proyectos encontrados sino que puede crear un archivo CSV o incluso JSON con la lista completa.
 
