@@ -6,6 +6,11 @@ No solo imprime en pantalla los proyectos encontrados sino que puede crear un ar
 
 El formato JSON utilizado es compatible con la extensión **Project Manager** ([vscode-project-manager](https://github.com/alefragnani/vscode-project-manager)) de **Visual Studio Code**.
 
+De forma predeterminada la información de los proyectos debe estar alojada en un archivo INI con alguno de los siguientes nombres:
+
+- `.project`
+- `project.ini`
+
 ## Algunos ejemplos
 
 ### Buscar proyectos y etiquetarlos con **Go** si se encuentran dentro de una determinada subcarpeta
@@ -27,3 +32,11 @@ procollector -json projects.json -t "local=/dev/" -t "net=/repo/web/" ~/dev /mnt
 ## Más información
 
 Ejecute simplemente el comando (`procollector`) para conocer la lista completa de parámetros.
+
+## Formato del archivo INI
+
+```ini
+name = Nombre del proyecto
+tag = etiqueta1, etiqueta2
+; disabled = true
+```
