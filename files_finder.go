@@ -49,6 +49,10 @@ func (ff filesFinder) find() error {
 			newff.setErrorCallback(ff.onError)
 		}
 
+		if len(ff.ignoreFolders) > 0 {
+			newff.setIgnoreFolders(ff.ignoreFolders)
+		}
+
 		if err := newff.find(); err != nil && ff.onError != nil {
 			ff.onError(subdir, err)
 		}
