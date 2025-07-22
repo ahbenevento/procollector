@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"slices"
+	"strings"
 )
 
 //  //  //
@@ -14,10 +15,11 @@ type errorCallback func(string, error)
 type foundCallback func(string) bool
 
 type filesFinder struct {
-	path     string
-	patterns []string
-	onError  errorCallback
-	onFound  foundCallback
+	path          string
+	patterns      []string
+	onError       errorCallback
+	onFound       foundCallback
+	ignoreFolders []string
 }
 
 func (ff filesFinder) find() error {
@@ -71,7 +73,7 @@ func (ff filesFinder) files(dir, pattern string) ([]string, error) {
 			return nil, err
 		}
 
-		if !finfo.IsDir() && finfo.Size() > 0 {
+		if !finfo.IsDir() && finfo.Size() > 0 && !ff.filterByIgnoredFolders(name) {
 			result = append(result, name)
 		}
 	}
@@ -95,7 +97,7 @@ func (ff filesFinder) dirs(dir string) ([]string, error) {
 			return nil, err
 		}
 
-		if finfo.IsDir() && finfo.Name()[0] != '.' {
+		if finfo.IsDir() && finfo.Name()[0] != '.' && !ff.filterByIgnoredFolders(name) {
 			result = append(result, name)
 		}
 	}
@@ -105,6 +107,24 @@ func (ff filesFinder) dirs(dir string) ([]string, error) {
 
 func (ff *filesFinder) setErrorCallback(callback errorCallback) {
 	ff.onError = callback
+}
+
+func (ff *filesFinder) setIgnoreFolders(folders []string) {
+	ff.ignoreFolders = folders
+}
+
+func (ff filesFinder) filterByIgnoredFolders(filename string) bool {
+	if len(ff.ignoreFolders) == 0 {
+		return false
+	}
+
+	for _, folder := range ff.ignoreFolders {
+		if strings.Contains(filename, folder) {
+			return true
+		}
+	}
+
+	return false
 }
 
 //  //  //

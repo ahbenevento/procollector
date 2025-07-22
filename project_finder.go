@@ -18,10 +18,15 @@ type projectFinder struct {
 	err            error
 	projects       []project
 	all            bool
+	ignoreFolders  []string
 }
 
 func (pf *projectFinder) includeDisabledProjects(include bool) {
 	pf.all = include
+}
+
+func (pf *projectFinder) setIgnoreFolders(folders []string) {
+	pf.ignoreFolders = folders
 }
 
 func (pf *projectFinder) printError(path string, err error) {
@@ -74,6 +79,10 @@ func (pf *projectFinder) run() int {
 			ffinder := newFilesFinder(repo, pf.patterns, pf.checkProjectFile)
 
 			ffinder.setErrorCallback(pf.printError)
+
+			if len(pf.ignoreFolders) > 0 {
+				ffinder.setIgnoreFolders(pf.ignoreFolders)
+			}
 
 			if err := ffinder.find(); err != nil && pf.err == nil {
 				pf.mu.Lock()

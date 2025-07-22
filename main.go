@@ -91,6 +91,10 @@ func findProjects(params cmdParams) *projectCollection {
 		pf.includeDisabledProjects(true)
 	}
 
+	if len(params.ignoreFolders) > 0 {
+		pf.setIgnoreFolders([]string(params.ignoreFolders))
+	}
+
 	count := pf.run()
 
 	if err := pf.Error(); err != nil {

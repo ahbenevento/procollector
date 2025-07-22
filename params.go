@@ -49,7 +49,7 @@ func (dt directoryTagsCmdParam) Set(value string) error {
 }
 
 // TODO: no utilizado
-func (dt directoryTagsCmdParam) String() string {
+func (directoryTagsCmdParam) String() string {
 	return ""
 }
 
@@ -71,7 +71,20 @@ func (fm *filePatternsCmdParam) Set(value string) error {
 }
 
 // TODO: no utilizado
-func (fm filePatternsCmdParam) String() string {
+func (filePatternsCmdParam) String() string {
+	return ""
+}
+
+type directoryList []string
+
+func (dl *directoryList) Set(value string) error {
+	*dl = append(*dl, value)
+
+	return nil
+}
+
+// TODO:
+func (directoryList) String() string {
 	return ""
 }
 
@@ -83,6 +96,7 @@ type cmdParams struct {
 	printResume        bool
 	outputCSVFilename  string
 	outputJSONFilename string
+	ignoreFolders      directoryList
 }
 
 func (p *cmdParams) parse() error {
@@ -94,6 +108,7 @@ func (p *cmdParams) parse() error {
 	flag.BoolVar(&p.printResume, "r", false, "Solo muestra un resumen de los parámetros recibidos.")
 	flag.StringVar(&p.outputCSVFilename, "csv", "", "Guarda los proyectos encontrados en un archivo CSV.")
 	flag.StringVar(&p.outputJSONFilename, "json", "", "Guarda los proyectos en un archivo JSON.")
+	flag.Var(&p.ignoreFolders, "i", `Permite ignorar directorios específicos.`)
 
 	errorInParams := flag.Parse(os.Args[1:])
 
