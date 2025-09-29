@@ -34,7 +34,7 @@ func getSanitizedPathList(paths []string) []string {
 				goto skip
 			}
 
-			if strings.HasPrefix(path, parent) {
+			if strings.HasPrefix(path, parent+"/") {
 				goto skip
 			}
 		}
