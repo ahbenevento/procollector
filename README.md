@@ -39,4 +39,10 @@ Ejecute simplemente el comando (`procollector`) para conocer la lista completa d
 name = Nombre del proyecto
 tag = etiqueta1, etiqueta2
 ; disabled = true
+
+[nombre-host]
+name = Mismo proyecto en otro equipo
+
+[usuario@nombre-host]
+name = Mismo proyecto para un determinado usuario en un equipo
 ```

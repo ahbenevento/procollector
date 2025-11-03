@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"os/user"
 	"slices"
 	"strings"
 )
@@ -45,4 +47,14 @@ func getSanitizedPathList(paths []string) []string {
 	}
 
 	return result
+}
+
+func getUserAndHost() string {
+	if hostname, err := os.Hostname(); err == nil {
+		if user, err := user.Current(); err == nil {
+			return user.Username + "@" + hostname
+		}
+	}
+
+	return ""
 }
