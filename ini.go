@@ -39,7 +39,7 @@ func loadProjectFromIniFile(filename string, includeDisabledProject bool) (*proj
 	}
 
 	for _, section := range sections {
-		if strings.HasPrefix(result.Path, section.Name()) == false {
+		if !strings.HasPrefix(result.Path, section.Name()) {
 			continue
 		}
 
@@ -51,6 +51,10 @@ func loadProjectFromIniFile(filename string, includeDisabledProject bool) (*proj
 		}
 
 		result.Name = name
+
+		if tags := section.Key("tag").Strings(","); len(tags) > 0 {
+			result.Tags = tags
+		}
 
 		if disabled {
 			result.Enabled = false
