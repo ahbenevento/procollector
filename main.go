@@ -95,7 +95,7 @@ func findProjects(params cmdParams) *projectCollection {
 		pf.setIgnoreFolders([]string(params.ignoreFolders))
 	}
 
-	count := pf.run()
+	count := pf.run(params.deep)
 
 	if err := pf.Error(); err != nil {
 		fmt.Printf("Error al buscar proyectos: %s\n", err)

@@ -20,9 +20,10 @@ type filesFinder struct {
 	onError       errorCallback
 	onFound       foundCallback
 	ignoreFolders []string
+	deep          int
 }
 
-func (ff filesFinder) find() error {
+func (ff filesFinder) find(deep int) error {
 	for _, pattern := range ff.patterns {
 		files, err := ff.files(ff.path, pattern)
 
@@ -35,7 +36,12 @@ func (ff filesFinder) find() error {
 		}
 	}
 
+	if deep > 0 && ff.deep >= deep {
+		return nil
+	}
+
 	// Buscar en los subdirectorios
+	ff.deep++
 	subdirs, err := ff.dirs(ff.path)
 
 	if err != nil {
@@ -44,6 +50,7 @@ func (ff filesFinder) find() error {
 
 	for _, subdir := range subdirs {
 		newff := newFilesFinder(subdir, ff.patterns, ff.onFound)
+		newff.deep = ff.deep
 
 		if ff.onError != nil {
 			newff.setErrorCallback(ff.onError)
@@ -53,7 +60,7 @@ func (ff filesFinder) find() error {
 			newff.setIgnoreFolders(ff.ignoreFolders)
 		}
 
-		if err := newff.find(); err != nil && ff.onError != nil {
+		if err := newff.find(deep); err != nil && ff.onError != nil {
 			ff.onError(subdir, err)
 		}
 	}

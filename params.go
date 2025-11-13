@@ -97,6 +97,7 @@ type cmdParams struct {
 	outputCSVFilename  string
 	outputJSONFilename string
 	ignoreFolders      directoryList
+	deep               int
 }
 
 func (p *cmdParams) parse() error {
@@ -109,12 +110,15 @@ func (p *cmdParams) parse() error {
 	flag.StringVar(&p.outputCSVFilename, "csv", "", "Guarda los proyectos encontrados en un archivo CSV.")
 	flag.StringVar(&p.outputJSONFilename, "json", "", "Guarda los proyectos en un archivo JSON.")
 	flag.Var(&p.ignoreFolders, "i", `Permite ignorar directorios específicos.`)
+	flag.IntVar(&p.deep, "d", 0, "Permite definir la profundidad en la búsqueda de subdirectorios (0 = sin límite).")
 
 	errorInParams := flag.Parse(os.Args[1:])
 
 	if errorInParams != nil {
 		return errorInParams
 	}
+
+	p.deep = max(0, p.deep)
 
 	for _, dir := range flag.Args() {
 		path, err := filepath.Abs(dir)

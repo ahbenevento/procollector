@@ -67,7 +67,7 @@ func (pf *projectFinder) Error() error {
 	return pf.err
 }
 
-func (pf *projectFinder) run() int {
+func (pf *projectFinder) run(deep int) int {
 	var wg sync.WaitGroup
 
 	wg.Add(len(pf.sanitizedPaths))
@@ -84,7 +84,7 @@ func (pf *projectFinder) run() int {
 				ffinder.setIgnoreFolders(pf.ignoreFolders)
 			}
 
-			if err := ffinder.find(); err != nil && pf.err == nil {
+			if err := ffinder.find(deep); err != nil && pf.err == nil {
 				pf.mu.Lock()
 				defer pf.mu.Unlock()
 
