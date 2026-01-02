@@ -111,6 +111,10 @@ func printProjects(collection projectCollection) {
 	fmt.Printf("PROYECTOS ENCONTRADOS: %d\n", len(collection.projects))
 
 	for _, project := range collection.projects {
+		if !project.Enabled {
+			project.Name += "*"
+		}
+
 		fmt.Printf("\n  - %-40s  %s\n", project.Name, project.Path)
 	}
 }

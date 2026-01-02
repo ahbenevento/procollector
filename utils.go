@@ -50,10 +50,18 @@ func getSanitizedPathList(paths []string) []string {
 }
 
 func getUserAndHost() string {
-	if hostname, err := os.Hostname(); err == nil {
+	if hostname := getHostname(); hostname != "" {
 		if user, err := user.Current(); err == nil {
 			return user.Username + "@" + hostname
 		}
+	}
+
+	return ""
+}
+
+func getHostname() string {
+	if hostname, err := os.Hostname(); err == nil {
+		return hostname
 	}
 
 	return ""
