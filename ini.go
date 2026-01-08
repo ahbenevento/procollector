@@ -108,17 +108,24 @@ func loadProjectFromIniFile(filename string, includeDisabledProject bool) (*proj
 
 	// Buscar configuraciones especiales según la carpeta donde se encuentre el
 	// proyecto
+	updated := false
+
 	for _, section := range sections {
 		if !strings.ContainsAny(section.Name(), "/\\") || !strings.HasPrefix(result.Path, section.Name()) {
 			continue
 		}
 
-		updateProjectByIniSection(result, section)
+		updated = updateProjectByIniSection(result, section)
+
 		break
 	}
 
-	if !result.Enabled && !includeDisabledProject {
-		return nil, nil
+	if updated {
+		if !result.Enabled && !includeDisabledProject {
+			return nil, nil
+		}
+
+		return result, nil
 	}
 
 	// Buscar una sección que coincida con el usuario@host
